@@ -186,7 +186,7 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
         return null;
     }
 
-    protected void RotateLeft(TNode x)
+    protected virtual void RotateLeft(TNode x)
     {
         var y = x.Right;
         if (y == null)
@@ -205,7 +205,7 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
         x.Parent = y;
     }
 
-    protected void RotateRight(TNode y)
+    protected virtual void RotateRight(TNode y)
     {
         var x = y.Left;
         if (x == null)
