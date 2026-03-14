@@ -108,12 +108,19 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
             {
                 Transplant(maxLeft, maxLeft.Left);
                 maxLeft.Left = node.Left;
-                maxLeft.Left.Parent = maxLeft;
+                if (maxLeft.Left != null)
+                {
+                    maxLeft.Left.Parent = maxLeft;
+                }
             }
 
             Transplant(node, maxLeft);
             maxLeft.Right = node.Right;
-            maxLeft.Right.Parent = maxLeft;
+            if (maxLeft.Right != null)
+            {
+                maxLeft.Right.Parent = maxLeft;
+            }
+
             OnNodeRemoved(maxLeft.Parent, maxLeft);
 
         }
@@ -326,7 +333,7 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
         public IEnumerator<TreeEntry<TKey, TValue>> GetEnumerator() => this;
         IEnumerator IEnumerable.GetEnumerator() => this;
 
-        public TreeEntry<TKey, TValue> Current =>  _currentEntry;
+        public TreeEntry<TKey, TValue> Current => _currentEntry;
         object IEnumerator.Current => this.Current;
 
         private int GetHieght(TNode? node)
@@ -414,14 +421,14 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
                     else
                     {
                         TNode pn = _stack.Peek();
-                        if (pn.Right != null && _lastVisited != pn.Right)
+                        if (pn.Left != null && _lastVisited != pn.Left)
                         {
-                            _current = pn.Right;
+                            _current = pn.Left;
                         }
                         else
                         {
                             _currentEntry = new TreeEntry<TKey, TValue>(pn.Key, pn.Value, GetHieght(pn));
-                            _current = _stack.Pop();
+                            _lastVisited = _stack.Pop();
                             return true;
                         }
                     }
@@ -521,7 +528,7 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
     public bool Contains(KeyValuePair<TKey, TValue> item) => ContainsKey(item.Key);
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
-        foreach(var x in this)
+        foreach (var x in this)
         {
             array[arrayIndex++] = x;
         }

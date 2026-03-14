@@ -102,4 +102,8 @@ public class SplayTree<TKey, TValue> : BinarySearchTree<TKey, TValue>
         }
     }
 
+    public override bool ContainsKey(TKey key)
+    {
+        return TryGetValue(key, out _);
+    }
 }
