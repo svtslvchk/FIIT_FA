@@ -29,9 +29,9 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
         return u;
     }
 
-    private RbNode<TKey, TValue>? GetBro(RbNode<TKey, TValue> node)
+    private RbNode<TKey, TValue>? GetBro(RbNode<TKey, TValue>? node)
     {
-        if (node.Parent == null)
+        if (node?.Parent == null)
         {
             return null;
         }
@@ -122,6 +122,104 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
     }
     protected override void OnNodeRemoved(RbNode<TKey, TValue>? parent, RbNode<TKey, TValue>? child)
     {
-        throw new NotImplementedException();
+        var current = child;
+        var p = parent;
+        while (current != Root && IsBlack(current) && p != null)
+        {
+            if (current == p!.Left)
+            {
+                var b = GetBro(current!);
+                if (b == null)
+                {
+                    break;
+                }
+                // красный брат
+                if (IsRed(b))
+                {
+                    b.Color = RbColor.Black;
+                    p!.Color = RbColor.Red;
+                    RotateLeft(p);
+                    b = p.Right;
+                }
+
+                // черные племянники 
+                if (IsBlack(b?.Left) && IsBlack(b?.Right))
+                {
+                    if (b != null)
+                    {
+                        b.Color = RbColor.Red;
+                    }
+
+                    current = p;
+                    p = current.Parent;
+                    continue;
+                }
+
+                // племянники: левый - К, правый - Ч
+                if (IsBlack(b!.Right))
+                {
+                    b.Left!.Color = RbColor.Black;
+                    b.Color = RbColor.Red;
+                    RotateRight(b);
+                    b = p!.Right;
+                }
+
+                // правый племянник - К
+                b!.Color = p.Color;
+                p.Color = RbColor.Black;
+                b.Right!.Color = RbColor.Black;
+                RotateLeft(p);
+                current = this.Root;
+            }
+
+            else
+            {
+                var b = GetBro(current!);
+                if (b == null) 
+                { 
+                    break; 
+                }
+
+                if (IsRed(b))
+                {
+                    b.Color = RbColor.Black;
+                    p.Color = RbColor.Red;
+                    RotateRight(p);
+                    b = p.Left;
+                }
+
+                if (IsBlack(b?.Right) && IsBlack(b?.Left))
+                {
+                    if (b != null) 
+                    { 
+                        b.Color = RbColor.Red; 
+                    }
+                    current = p;
+                    p = current?.Parent;
+                    continue;
+                }
+
+                if (IsBlack(b!.Left))
+                {
+                    b.Right!.Color = RbColor.Black;
+                    b.Color = RbColor.Red;
+                    RotateLeft(b);
+                    b = p!.Left;
+                }
+
+                b!.Color = p.Color;
+                p.Color = RbColor.Black;
+                b.Left!.Color = RbColor.Black;
+                RotateRight(p);
+                current = this.Root;
+            
+            }
+        }
+
+        if (current != null)
+        {
+            current.Color = RbColor.Black;
+        }
+        
     }
 }
