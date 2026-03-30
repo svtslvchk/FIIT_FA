@@ -342,12 +342,154 @@ public sealed class BetterBigInteger : IBigInteger
     public static BetterBigInteger operator *(BetterBigInteger a, BetterBigInteger b)
        => throw new NotImplementedException("Умножение делегируется стратегии, выбирать необходимо в зависимости от размеров чисел");
 
-    public static BetterBigInteger operator ~(BetterBigInteger a) => throw new NotImplementedException();
-    public static BetterBigInteger operator &(BetterBigInteger a, BetterBigInteger b) => throw new NotImplementedException();
-    public static BetterBigInteger operator |(BetterBigInteger a, BetterBigInteger b) => throw new NotImplementedException();
-    public static BetterBigInteger operator ^(BetterBigInteger a, BetterBigInteger b) => throw new NotImplementedException();
-    public static BetterBigInteger operator <<(BetterBigInteger a, int shift) => throw new NotImplementedException();
-    public static BetterBigInteger operator >>(BetterBigInteger a, int shift) => throw new NotImplementedException();
+
+    public static BetterBigInteger operator ~(BetterBigInteger a)
+    {
+        if (a.IsNegative)
+        {
+            throw new NotSupportedException();
+        }
+
+        var da = a.GetDigits();
+        uint[] res = new uint[da.Length];
+        for (int i = 0; i < da.Length; i++)
+        {
+            res[i] = ~da[i];
+        }
+
+        return new BetterBigInteger(res);
+    }
+
+    public static BetterBigInteger operator &(BetterBigInteger a, BetterBigInteger b)
+    {
+        if (a.IsNegative || b.IsNegative)
+        {
+            throw new NotSupportedException();
+        }
+
+        var da = a.GetDigits();
+        var db = b.GetDigits();
+        int len = Math.Max(da.Length, db.Length);
+        uint[] res = new uint[len];
+        for (int i = 0; i < len; i++)
+        {
+            uint va = (i < da.Length) ? da[i] : 0;
+            uint vb = (i < db.Length) ? db[i] : 0;
+            res[i] = va & vb;
+        }
+
+        return new BetterBigInteger(res);
+    }
+
+    public static BetterBigInteger operator |(BetterBigInteger a, BetterBigInteger b)
+    {
+        if (a.IsNegative || b.IsNegative)
+        {
+            throw new NotSupportedException();
+        }
+
+        var da = a.GetDigits();
+        var db = b.GetDigits();
+        int len = Math.Max(da.Length, db.Length);
+        uint[] res = new uint[len];
+        for (int i = 0; i < len; i++)
+        {
+            uint va = (i < da.Length) ? da[i] : 0;
+            uint vb = (i < db.Length) ? db[i] : 0;
+            res[i] = va | vb;
+        }
+
+        return new BetterBigInteger(res);
+    }
+
+    public static BetterBigInteger operator ^(BetterBigInteger a, BetterBigInteger b)
+    {
+        if (a.IsNegative || b.IsNegative)
+        {
+            throw new NotSupportedException();
+        }
+
+        var da = a.GetDigits();
+        var db = b.GetDigits();
+        int len = Math.Max(da.Length, db.Length);
+        uint[] res = new uint[len];
+        for (int i = 0; i < len; i++)
+        {
+            uint va = (i < da.Length) ? da[i] : 0;
+            uint vb = (i < db.Length) ? db[i] : 0;
+            res[i] = va ^ vb;
+        }
+
+        return new BetterBigInteger(res);
+    }
+
+    public static BetterBigInteger operator <<(BetterBigInteger a, int shift)
+    {
+        if (shift < 0)
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+
+        if (a.IsNegative)
+        {
+            throw new NotSupportedException();
+        }
+
+        var da = a.GetDigits();
+
+        int wordShift = shift / 32;
+        int bitShift = shift % 32;
+
+        uint[] res = new uint[wordShift + da.Length + 1];
+        ulong carry = 0;
+        for (int i = 0; i < da.Length; i++)
+        {
+            ulong val = ((ulong)da[i] << bitShift) | carry;
+            res[i + wordShift] = (uint)val;
+            carry = val >> 32;
+        }
+
+        if (carry != 0)
+        {
+            res[da.Length + wordShift] = (uint)carry;
+        }
+
+        return new BetterBigInteger(res);
+    }
+
+    public static BetterBigInteger operator >>(BetterBigInteger a, int shift)
+    {
+        if (shift < 0)
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+
+        if (a.IsNegative)
+        {
+            throw new NotSupportedException();
+        }
+
+        var da = a.GetDigits();
+
+        int wordShift = shift / 32;
+        int bitShift = shift % 32;
+
+        if (wordShift >= da.Length)
+        {
+            return new BetterBigInteger(new uint[] {0});
+        }
+
+        uint[] res = new uint[da.Length - wordShift];
+        ulong carry = 0;
+        for (int i = da.Length - 1; i >= wordShift; i--)
+        {
+            ulong val = da[i];
+            res[i - wordShift] = (uint)((val >> bitShift) | carry);
+            carry = (val << (32 - bitShift)) & 0xFFFFFFFF;
+        }
+
+        return new BetterBigInteger(res);
+    }
 
     public static bool operator ==(BetterBigInteger a, BetterBigInteger b) => Equals(a, b);
     public static bool operator !=(BetterBigInteger a, BetterBigInteger b) => !Equals(a, b);
