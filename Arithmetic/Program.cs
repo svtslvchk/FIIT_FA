@@ -23,13 +23,13 @@ foreach (var test in tests)
 /*
 /// [x] Test_Addition_Random()
 /// [x] Test_Comparison_Logic()
-/// [] Test_Division_Random() - зависает 
+/// [x] Test_Division_Random() 
 /// [x] Test_DivideByZero_Throws()
-/// [x] Test_UnaryMinus_And_Modulo() - что-то наколдовал 
+/// [x] Test_UnaryMinus_And_Modulo()
 /// [x] Test_Constructors_And_SSO_Threshold()
 /// [x] Test_Radix_Conversion()
-/// [x] Test_Bitwise_Logic() - работает нечестно ❌
-/// [x] Test_Shifts() - работает нечестно ❌ (а как будто и получилось)
+/// [x] Test_Bitwise_Logic()
+/// [x] Test_Shifts()
 /// [x] Test_EdgeCases()
 /// [x] Test_Multiplication_Karatsuba()
 /// [] Test_Multiplication_FFT() - не реализовано
