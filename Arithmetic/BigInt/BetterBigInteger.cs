@@ -50,7 +50,7 @@ public sealed class BetterBigInteger : IBigInteger
     }
 
     public BetterBigInteger(IEnumerable<uint> digits, bool isNegative = false)
-    : this(digits as uint[] ?? digits?.ToArray() ?? throw new ArgumentNullException(nameof(digits)), isNegative)
+    : this(digits?.ToArray() ?? throw new ArgumentNullException(nameof(digits)), isNegative)
     {
 
     }
@@ -289,7 +289,7 @@ public sealed class BetterBigInteger : IBigInteger
         int cmp = CompareAbs(a, b);
         if (cmp == 0)
         {
-            return new BetterBigInteger(new uint[] {0});
+            return new BetterBigInteger(new uint[] { 0 });
         }
 
         if (cmp > 0)
@@ -356,23 +356,23 @@ public sealed class BetterBigInteger : IBigInteger
         BetterBigInteger divisor = new BetterBigInteger(b.GetDigits().ToArray());
         if (divident < divisor)
         {
-            return (new BetterBigInteger(new uint[] {0}), divident);
+            return (new BetterBigInteger(new uint[] { 0 }), divident);
         }
 
-        BetterBigInteger q = new BetterBigInteger(new uint[] {0});
-        BetterBigInteger r = new BetterBigInteger(new uint[] {0});
+        BetterBigInteger q = new BetterBigInteger(new uint[] { 0 });
+        BetterBigInteger r = new BetterBigInteger(new uint[] { 0 });
         for (int i = divident.GetBitLength() - 1; i >= 0; i--)
         {
             r <<= 1;
             if (divident.GetBit(i))
             {
-                r += new BetterBigInteger(new uint[] {1});
+                r += new BetterBigInteger(new uint[] { 1 });
             }
 
             if (r >= divisor)
             {
                 r -= divisor;
-                q |= (new BetterBigInteger(new uint[] {1}) << i);
+                q |= (new BetterBigInteger(new uint[] { 1 }) << i);
             }
         }
 
@@ -396,7 +396,7 @@ public sealed class BetterBigInteger : IBigInteger
     {
         if (a.IsZero() || b.IsZero())
         {
-            return new BetterBigInteger(new uint[] {0});
+            return new BetterBigInteger(new uint[] { 0 });
         }
 
         IMultiplier strategy;
@@ -422,15 +422,15 @@ public sealed class BetterBigInteger : IBigInteger
         {
             return digits;
         }
-        
+
         uint[] result = new uint[digits.Length];
         Array.Copy(digits, result, digits.Length);
-        
+
         for (int i = 0; i < result.Length; i++)
         {
             result[i] = ~result[i];
         }
-        
+
         ulong carry = 1;
         for (int i = 0; i < result.Length && carry > 0; i++)
         {
@@ -438,26 +438,26 @@ public sealed class BetterBigInteger : IBigInteger
             result[i] = (uint)sum;
             carry = sum >> 32;
         }
-        
+
         return result;
     }
     private static (uint[] digits, bool isNegative) FromTwosComplement(uint[] complement)
     {
         if (complement.Length == 0)
         {
-            return (new uint[] {0}, false);
+            return (new uint[] { 0 }, false);
         }
-        
+
         bool isNegative = (complement[complement.Length - 1] & (1u << 31)) != 0;
-        
+
         if (!isNegative)
         {
             return (complement, false);
         }
-        
+
         uint[] result = new uint[complement.Length];
         Array.Copy(complement, result, complement.Length);
-        
+
         long borrow = 1;
         for (int i = 0; i < result.Length; i++)
         {
@@ -474,12 +474,12 @@ public sealed class BetterBigInteger : IBigInteger
 
             result[i] = (uint)diff;
         }
-        
+
         for (int i = 0; i < result.Length; i++)
         {
             result[i] = ~result[i];
         }
-        
+
         return (result, true);
     }
 
@@ -528,11 +528,11 @@ public sealed class BetterBigInteger : IBigInteger
         if (a.IsZero())
         {
             // ~0 = -1
-            return new BetterBigInteger(new uint[] {1}, true);
+            return new BetterBigInteger(new uint[] { 1 }, true);
         }
-        
-        var one = new BetterBigInteger(new uint[] {1});
-        
+
+        var one = new BetterBigInteger(new uint[] { 1 });
+
         if (!a.IsNegative)
         {
             // ~positive = -(positive + 1)
@@ -544,12 +544,12 @@ public sealed class BetterBigInteger : IBigInteger
             // ~negative = |negative| - 1
             var absValue = new BetterBigInteger(a.GetDigits().ToArray(), false);
             var minusOne = SubAbs(absValue, one);
-            
+
             if (minusOne.IsZero())
             {
-                return new BetterBigInteger(new uint[] {0});
+                return new BetterBigInteger(new uint[] { 0 });
             }
-            
+
             return new BetterBigInteger(minusOne.GetDigits().ToArray(), false);
         }
     }
@@ -560,38 +560,38 @@ public sealed class BetterBigInteger : IBigInteger
         {
             throw new ArgumentOutOfRangeException(nameof(shift));
         }
-        
+
         if (shift == 0 || a.IsZero())
         {
             return new BetterBigInteger(a.GetDigits().ToArray(), a.IsNegative);
         }
-        
+
         var digits = a.GetDigits().ToArray();
         int wordShift = shift / 32;
         int bitShift = shift % 32;
-        
+
         int newLen = digits.Length + wordShift + (bitShift > 0 ? 1 : 0);
         uint[] result = new uint[newLen];
         ulong carry = 0;
-        
+
         for (int i = 0; i < digits.Length; i++)
         {
             ulong val = ((ulong)digits[i] << bitShift) | carry;
             result[i + wordShift] = (uint)val;
             carry = val >> 32;
         }
-        
+
         if (carry != 0)
         {
             result[digits.Length + wordShift] = (uint)carry;
         }
-        
+
         return new BetterBigInteger(result, a.IsNegative);
     }
 
     public static BetterBigInteger operator >>(BetterBigInteger a, int shift)
     {
-        if (shift < 0) 
+        if (shift < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(shift));
         }
@@ -605,19 +605,19 @@ public sealed class BetterBigInteger : IBigInteger
         int bitShift = shift % 32;
         var digits = a.GetDigits();
 
-        if (wordShift >= digits.Length) 
+        if (wordShift >= digits.Length)
         {
-            return a.IsNegative ? new BetterBigInteger(new uint[] {1}, true) : new BetterBigInteger(new uint[] {0});
+            return a.IsNegative ? new BetterBigInteger(new uint[] { 1 }, true) : new BetterBigInteger(new uint[] { 0 });
         }
 
         int newLen = digits.Length - wordShift;
         uint[] res = new uint[newLen];
-        
+
         for (int i = 0; i < newLen; i++)
         {
             uint cur = digits[i + wordShift];
             uint next = (i + wordShift + 1 < digits.Length) ? digits[i + wordShift + 1] : 0;
-            
+
             if (bitShift == 0)
             {
                 res[i] = cur;
@@ -627,7 +627,7 @@ public sealed class BetterBigInteger : IBigInteger
                 res[i] = (cur >> bitShift) | (next << (32 - bitShift)); // добавляем кусок от более старршего
             }
         }
-        
+
         var result = new BetterBigInteger(res, a.IsNegative);
 
         if (a.IsNegative)
@@ -635,13 +635,13 @@ public sealed class BetterBigInteger : IBigInteger
             bool discardedBitsAreNonZero = false;
             for (int i = 0; i < wordShift; i++)
             {
-                if (digits[i] != 0) 
-                { 
-                    discardedBitsAreNonZero = true; 
-                    break; 
+                if (digits[i] != 0)
+                {
+                    discardedBitsAreNonZero = true;
+                    break;
                 }
             }
-            
+
             if (!discardedBitsAreNonZero && bitShift > 0)
             {
                 uint discardedMask = (1u << bitShift) - 1;
@@ -650,13 +650,13 @@ public sealed class BetterBigInteger : IBigInteger
                     discardedBitsAreNonZero = true;
                 }
             }
-            
+
             if (discardedBitsAreNonZero)
             {
-                result -= new BetterBigInteger(new uint[] {1}); // Округляем вниз
+                result -= new BetterBigInteger(new uint[] { 1 }); // Округляем вниз
             }
         }
-        
+
         return result;
     }
 
@@ -681,7 +681,7 @@ public sealed class BetterBigInteger : IBigInteger
         }
 
         var cur = new BetterBigInteger(this.GetDigits().ToArray());
-        var bigRadix = new BetterBigInteger(new uint[] {(uint)radix});
+        var bigRadix = new BetterBigInteger(new uint[] { (uint)radix });
         var chars = new List<char>();
         while (!cur.IsZero())
         {

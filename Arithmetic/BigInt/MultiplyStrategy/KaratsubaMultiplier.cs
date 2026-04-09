@@ -104,8 +104,8 @@ internal class KaratsubaMultiplier : IMultiplier
         {
             var tempA = new BetterBigInteger(a, false);
             var tempB = new BetterBigInteger(b, false);
-            var product = _simpleMultiplier.Multiply(tempA, tempB);
-            return product.GetDigits().ToArray();
+            var res = _simpleMultiplier.Multiply(tempA, tempB);
+            return res.GetDigits().ToArray();
         }
 
         a = PadToLength(a, n);
