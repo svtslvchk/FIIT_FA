@@ -56,7 +56,7 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
     {
         return new RbNode<TKey, TValue>(key, value);
     }
-    
+
     protected override void OnNodeAdded(RbNode<TKey, TValue> newNode)
     {
         var p = newNode.Parent;
@@ -175,9 +175,9 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
             else
             {
                 var b = GetBro(current!);
-                if (b == null) 
-                { 
-                    break; 
+                if (b == null)
+                {
+                    break;
                 }
 
                 if (IsRed(b))
@@ -190,9 +190,9 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
 
                 if (IsBlack(b?.Right) && IsBlack(b?.Left))
                 {
-                    if (b != null) 
-                    { 
-                        b.Color = RbColor.Red; 
+                    if (b != null)
+                    {
+                        b.Color = RbColor.Red;
                     }
                     current = p;
                     p = current?.Parent;
@@ -212,7 +212,7 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
                 b.Left!.Color = RbColor.Black;
                 RotateRight(p);
                 current = this.Root;
-            
+
             }
         }
 
@@ -220,6 +220,6 @@ public class RedBlackTree<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, RbN
         {
             current.Color = RbColor.Black;
         }
-        
+
     }
 }

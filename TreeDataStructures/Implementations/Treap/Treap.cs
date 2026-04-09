@@ -64,7 +64,6 @@ public class Treap<TKey, TValue> : BinarySearchTreeBase<TKey, TValue, TreapNode<
         {
             return right;
         }
-
         else if (right == null)
         {
             return left;

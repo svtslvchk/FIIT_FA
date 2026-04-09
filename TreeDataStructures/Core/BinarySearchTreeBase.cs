@@ -500,7 +500,6 @@ public abstract class BinarySearchTreeBase<TKey, TValue, TNode>(IComparer<TKey>?
 
         public void Dispose()
         {
-            // TODO release managed resources here
             if (_stack != null)
             {
                 _stack.Clear();
